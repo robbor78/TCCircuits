@@ -20,32 +20,43 @@ namespace TCCircuits
 
       int numNodes = graph.Length;
 
-      for (int node = 0; node < numNodes; node++)
+      for (int nodeIndex = 0; nodeIndex < numNodes; nodeIndex++)
       {
-        int[] links = graph[node];
-        int numLinks = links.Length;
-        for (int link = 0; link < numLinks; link++)
+        Stack<Tuple<int, int>> stack = new Stack<Tuple<int, int>>();
+
+        stack.Push(new Tuple<int, int>(-1,nodeIndex));
+
+        while (stack.Count()>0)
         {
-          Stack<int> stack = new Stack<int>();
-          stack.Push(link);
-
-          int pathLength = 0;
-          while (stack.Count() > 0)
-          {
-            int current = stack.Pop();
-
-            pathLength += graph[node][current];
-
-            int[] neighbors = graph[link];
-            Array.ForEach(neighbors, n => stack.Push(n));
-
-          }
-
-          if (pathLength > max)
-          {
-            max = pathLength;
-          }
+          var node = stack.Pop();
         }
+
+        //int[] links = graph[node];
+        //int numLinks = links.Length;
+        //for (int linkIndex = 0; linkIndex < numLinks; linkIndex++)
+        //{
+        //  Stack<int> stack = new Stack<int>();
+        //  int link = links[linkIndex];
+        //  if (link==-1) { continue; }
+        //  stack.Push(link);
+
+        //  int pathLength = 0;
+        //  while (stack.Count() > 0)
+        //  {
+        //    int currLink = stack.Pop();
+
+        //    pathLength += graph[node][currLink];
+
+        //    int[] neighbors = graph[linkIndex];
+        //    Array.ForEach(neighbors, n => stack.Push(n));
+
+        //  }
+
+        //  if (pathLength > max)
+        //  {
+        //    max = pathLength;
+        //  }
+        //}
 
       }
 
@@ -61,18 +72,29 @@ namespace TCCircuits
       {
         graph[i] = Enumerable.Repeat(-1, numNodes).ToArray();
 
-        int[] connect = connects[i].Split().Select(x => int.Parse(x)).ToArray();
-        int[] linkCosts = costs[i].Split().Select(x => int.Parse(x)).ToArray();
+        int[] connect = GetValues(connects[i]);
+        int[] linkCosts = GetValues(costs[i]);
 
-        int numLinks = connect.Length;
-        for (int j = 0; j < numLinks; j++)
+        if (connect != null && linkCosts != null)
         {
-          int link = connect[j];
-          int cost = linkCosts[j];
-          graph[i][link] = cost;
+          int numLinks = connect.Length;
+          for (int j = 0; j < numLinks; j++)
+          {
+            int link = connect[j];
+            int cost = linkCosts[j];
+            graph[i][link] = cost;
+          }
         }
       }
       return graph;
+    }
+
+    private int[] GetValues(string str)
+    {
+      if (String.IsNullOrEmpty(str)) { return null; }
+      var arr = str.Split();
+      if (arr == null || arr.Length == 0) { return null; }
+      return arr.Select(x => int.Parse(x)).ToArray();
     }
   }
 }
