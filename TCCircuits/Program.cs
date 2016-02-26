@@ -22,38 +22,39 @@ namespace TCCircuits
 
       for (int nodeIndex = 0; nodeIndex < numNodes; nodeIndex++)
       {
-        Stack<Tuple<int, int>> stack = new Stack<Tuple<int, int>>();
+        Stack<Tuple<int, int, int>> stack = new Stack<Tuple<int, int, int>>();
 
-        stack.Push(new Tuple<int, int>(-1, nodeIndex));
-        int pathLength = 0;
+        stack.Push(new Tuple<int, int, int>(-1, nodeIndex, 0));
+        //int pathLength = 0;
         while (stack.Count() > 0)
         {
           var node = stack.Pop();
 
           int parent = node.Item1;
           int child = node.Item2;
+          int lengthNow = node.Item3;
 
           if (parent == -1)
           {
-            AddNeighbors(stack, graph, child);
+            AddNeighbors(stack, graph, child, lengthNow);
           }
           else
           {
-            pathLength += graph[parent][child];
+            //pathLength += graph[parent][child];
             int[] neighbors = graph[child];
 
             int count = neighbors.Count(x => x != -1);
 
             if (count == 0)
             {
-              if (pathLength > max)
+              if (lengthNow > max)
               {
-                max = pathLength;
+                max = lengthNow;// pathLength;
               }
-              pathLength = 0;
+             // pathLength -= lengthNow;
             }
             else {
-              AddNeighbors(stack, graph, child);
+              AddNeighbors(stack, graph, child, lengthNow);
             }
           }
         }
@@ -90,7 +91,7 @@ namespace TCCircuits
       return max;
     }
 
-    private void AddNeighbors(Stack<Tuple<int, int>> stack, int[][] graph, int index)
+    private void AddNeighbors(Stack<Tuple<int, int, int>> stack, int[][] graph, int index, int lengthNow)
     {
       int[] neighbors = graph[index];
 
@@ -98,7 +99,7 @@ namespace TCCircuits
       {
         if (neighbors[n] != -1)
         {
-          stack.Push(new Tuple<int, int>(index, n));
+          stack.Push(new Tuple<int, int, int>(index, n, neighbors[n]+lengthNow));
         }
       }
     }
