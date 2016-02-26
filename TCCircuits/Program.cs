@@ -24,11 +24,38 @@ namespace TCCircuits
       {
         Stack<Tuple<int, int>> stack = new Stack<Tuple<int, int>>();
 
-        stack.Push(new Tuple<int, int>(-1,nodeIndex));
-
-        while (stack.Count()>0)
+        stack.Push(new Tuple<int, int>(-1, nodeIndex));
+        int pathLength = 0;
+        while (stack.Count() > 0)
         {
           var node = stack.Pop();
+
+          int parent = node.Item1;
+          int child = node.Item2;
+
+          if (parent == -1)
+          {
+            AddNeighbors(stack, graph, child);
+          }
+          else
+          {
+            pathLength += graph[parent][child];
+            int[] neighbors = graph[child];
+
+            int count = neighbors.Count(x => x != -1);
+
+            if (count == 0)
+            {
+              if (pathLength > max)
+              {
+                max = pathLength;
+              }
+              pathLength = 0;
+            }
+            else {
+              AddNeighbors(stack, graph, child);
+            }
+          }
         }
 
         //int[] links = graph[node];
@@ -61,6 +88,19 @@ namespace TCCircuits
       }
 
       return max;
+    }
+
+    private void AddNeighbors(Stack<Tuple<int, int>> stack, int[][] graph, int index)
+    {
+      int[] neighbors = graph[index];
+
+      for (int n = 0; n < neighbors.Length; n++)
+      {
+        if (neighbors[n] != -1)
+        {
+          stack.Push(new Tuple<int, int>(index, n));
+        }
+      }
     }
 
     private int[][] BuildGraph(string[] connects, string[] costs)
